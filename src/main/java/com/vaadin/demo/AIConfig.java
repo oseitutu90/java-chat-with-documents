@@ -4,9 +4,6 @@ import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.memory.chat.TokenWindowChatMemory;
-import dev.langchain4j.model.Tokenizer;
-import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -60,7 +57,7 @@ public class AIConfig {
     ApplicationRunner docImporter(EmbeddingStore<TextSegment> embeddingStore) {
         return args -> {
             if (docsLocation == null || docsLocation.isEmpty()) {
-                log.error("No document location specified, configure 'docs.location' in application.properties");
+                log.error("No document location specified, configure 'docs.location' in application.yaml");
                 return;
             }
             log.info("Importing documents from {}", docsLocation);

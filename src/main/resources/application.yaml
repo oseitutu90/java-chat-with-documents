@@ -1,0 +1,56 @@
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    org:
+      atmosphere: warn
+
+spring:
+  mustache:
+    check-template-location: false
+  jpa:
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
+vaadin:
+  launch-browser: true
+  allowed-packages:
+    - com.vaadin
+    - org.vaadin
+    - dev.hilla
+    - com.vaadin.demo
+
+### DocsChat config
+
+ai:
+  docs:
+    location: /Users/oseitutuamoabin/Documents/PDF-DOCS
+  langchain4j:
+    open-ai:
+      streaming-chat-model:
+        api-key: ${OPENAI_API_KEY}
+        model-name: gpt-4o
+        streaming-chat-model:
+            log-requests: true
+            log-responses: true
+
+  # Local OpenAI compatible API (ollama)
+  # Not as performant, but your data does not leave your computer
+#  langchain4j:
+#    open-ai:
+#      streaming-chat-model:
+#        api-key: ollama
+#        base-url: http://localhost:11434/v1
+#        model-name: llama3:latest
+
+  #Debug logging to print requests
+  logging:
+    level:
+      dev:
+        langchain4j: DEBUG
+        ai4j:
+          openai4j: DEBUG
+
