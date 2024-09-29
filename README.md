@@ -12,14 +12,14 @@ The chatbot uses [LangChain4j](https://github.com/langchain4j/langchain4j) and t
 
 ### Configuring documentation location
 
-Update the `docs.location` property in `application.properties` to point to a folder with relevant documents. 
+Update the `docs.location` property in `application.yaml` to point to a folder with relevant documents. 
 LangChain4j uses Apache Tika internally when processing the files, so most file types work.
 
 ### Using Open AI
 
 OpenAI gives you better quality answers but requires you to send data to a 3rd party.
 
-To use OpenAI, get an [API key](https://platform.openai.com/api-keys) and configure it in `application.properties`. 
+To use OpenAI, get an [API key](https://platform.openai.com/api-keys) and configure it in `application.yaml`. 
 Optionally, you can also configure the model in the properties. 
 
 ### Using a local LLM
@@ -27,7 +27,7 @@ Optionally, you can also configure the model in the properties.
 Using a local model allows you to keep your data on your local computer, but the quality of answers will not be as good as with OpenAI.
 
 Install [Ollama](https://ollama.com/) and the `llama3` model.
-Comment out the OpenAI section of `application.properties` and uncomment the Ollama section.
+Comment out the OpenAI section of `application.yaml` and uncomment the Ollama section.
 
 ### Optional: Embedding store (Vector DB)
 
