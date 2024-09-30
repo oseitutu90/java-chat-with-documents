@@ -14,6 +14,9 @@ spring:
   sql:
     init:
       mode: always
+  profiles:
+    active: dev
+
 
 vaadin:
   launch-browser: true
@@ -32,19 +35,17 @@ ai:
     open-ai:
       streaming-chat-model:
         api-key: ${OPENAI_API_KEY}
-        model-name: gpt-4o
-        streaming-chat-model:
-            log-requests: true
-            log-responses: true
+        model-name: gpt-4
+        log-requests: true
+        log-responses: true
 
-  # Local OpenAI compatible API (ollama)
-  # Not as performant, but your data does not leave your computer
-#  langchain4j:
-#    open-ai:
-#      streaming-chat-model:
-#        api-key: ollama
-#        base-url: http://localhost:11434/v1
-#        model-name: llama3:latest
+  # Uncomment this if you're using a local OpenAI-compatible API (e.g., Ollama)
+  # langchain4j:
+  #   open-ai:
+  #     streaming-chat-model:
+  #       api-key: ollama
+  #       base-url: http://localhost:11434/v1
+  #       model-name: llama3:latest
 
   #Debug logging to print requests
   logging:
@@ -53,4 +54,3 @@ ai:
         langchain4j: DEBUG
         ai4j:
           openai4j: DEBUG
-
