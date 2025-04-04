@@ -6,6 +6,12 @@ logging:
     org:
       atmosphere: warn
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, info, health, metrics
+
 spring:
   mustache:
     check-template-location: false
@@ -16,7 +22,16 @@ spring:
       mode: always
   profiles:
     active: dev
-
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: docs
+      collection: documents
+      index-name: default
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
 
 vaadin:
   launch-browser: true
@@ -25,32 +40,60 @@ vaadin:
     - org.vaadin
     - dev.hilla
     - com.vaadin.demo
-
-### DocsChat config
-
-ai:
-  docs:
-    location: /Users/oseitutuamoabin/Documents/PDF-DOCS
-  langchain4j:
-    open-ai:
-      streaming-chat-model:
-        api-key: ${OPENAI_API_KEY}
-        model-name: gpt-4
-        log-requests: true
-        log-responses: true
-
-  # Uncomment this if you're using a local OpenAI-compatible API (e.g., Ollama)
-  # langchain4j:
-  #   open-ai:
-  #     streaming-chat-model:
-  #       api-key: ollama
-  #       base-url: http://localhost:11434/v1
-  #       model-name: llama3:latest
-
-  #Debug logging to print requests
   logging:
     level:
       dev:
         langchain4j: DEBUG
         ai4j:
           openai4j: DEBUG
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: docs
+      collection: documents   # 👈 make sure this is the one you're targeting
+      index-name: default
+
+ai:
+  docs:
+    location: /Users/oseitutuamoabin/Documents/searchable
+    langchain4j:
+      openAi:
+        apiKey: ollama
+        baseUrl: http://localhost:11434
+        modelName: mistral:latest #deepseek-r1:14b when i get macbook max
+        embeddingModelName: nomic-embed-text
+
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: docs
+      collection: documents   # 👈 make sure this is the one you're targeting
+      index-name: default
+
+ai:
+  docs:
+    location: /Users/oseitutuamoabin/Documents/PDF-DOCS
+    langchain4j:
+      openAi:
+          apiKey: ${OPEN-AI-API-KEY}          
+          modelName: gpt-4
+          baseUrlChat: https://api.openai.com/v1/chat/completions
+          baseUrl: https://api.openai.com/v1
+          embeddingModelName: text-embedding-ada-002
+          log-requests: true
+          log-responses: true
