@@ -17,7 +17,7 @@ public class AboutView extends VerticalLayout {
 
     public AboutView() {
         add(
-                new H1("About DocsChat"),
+                new H1("About ReadDocs"),
                 new Html("""
                         <div>
                             <p>
