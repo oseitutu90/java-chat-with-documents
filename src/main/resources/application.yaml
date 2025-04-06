@@ -90,7 +90,7 @@ ai:
     location: /Users/oseitutuamoabin/Documents/PDF-DOCS
     langchain4j:
       openAi:
-          apiKey: ${OPEN-AI-API-KEY}          
+          apiKey: ${OPENAI_API_KEY}
           modelName: gpt-4
           baseUrlChat: https://api.openai.com/v1/chat/completions
           baseUrl: https://api.openai.com/v1
