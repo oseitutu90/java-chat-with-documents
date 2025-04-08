@@ -91,6 +91,12 @@ public class AIConfig {
         };
     }
 
+    /**
+     * Provides a {@link StreamingChatLanguageModel} configured with the base URL and model name
+     * specified in the application's AI documentation properties.
+     *
+     * @return a streaming chat language model
+     */
     @Bean
     public StreamingChatLanguageModel streamingChatLanguageModel() {
         return OllamaStreamingChatModel.builder()
@@ -99,6 +105,14 @@ public class AIConfig {
                 .build();
     }
 
+    /**
+     * Returns a {@link ContentRetriever} that retrieves content from the provided
+     * {@link EmbeddingStore} using the provided {@link EmbeddingModel}.
+     *
+     * @param embeddingStore the embedding store to retrieve content from
+     * @param embeddingModel the embedding model to use for retrieving content
+     * @return a content retriever
+     */
     @Bean
     public ContentRetriever contentRetriever(EmbeddingStore<TextSegment> embeddingStore, EmbeddingModel embeddingModel) {
         return EmbeddingStoreContentRetriever.builder()
@@ -106,6 +120,13 @@ public class AIConfig {
                 .embeddingModel(embeddingModel)
                 .build();
     }
+
+    /**
+     * Returns a {@link ChatMemoryProvider} that provides a {@link MessageWindowChatMemory} with a maximum of 30 messages.
+     * This memory provider is used to store the chat history of each chat.
+     *
+     * @return a chat memory provider
+     */
     @Bean
     public ChatMemoryProvider chatMemoryProvider() {
         return chatId -> MessageWindowChatMemory.withMaxMessages(30);
