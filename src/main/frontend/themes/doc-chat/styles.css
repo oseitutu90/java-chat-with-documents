@@ -51,7 +51,13 @@ p code {
 p code::before {
     content: "`";
 }
-
+html[theme="olive"] {
+  --lumo-primary-color: #556b2f;
+  --lumo-primary-text-color: #556b2f;
+  --lumo-primary-color-50pct: rgba(85, 107, 47, 0.5);
+  --lumo-primary-color-10pct: rgba(85, 107, 47, 0.1);
+  /* Add other color variables as needed */
+}
 p code::after {
     content: "`";
 }

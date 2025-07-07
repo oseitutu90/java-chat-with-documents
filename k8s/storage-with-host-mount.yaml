@@ -1,0 +1,172 @@
+# Storage with Host Mount for macOS
+# This approach mounts macOS directories directly into Minikube
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: documents-pv-host
+  labels:
+    type: local
+    app: documents
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/storage/documents  # Mounted from macOS
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: documents-pvc-host
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: documents
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ollama-pv-host
+  labels:
+    type: local
+    app: ollama
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/storage/ollama  # Mounted from macOS
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-pvc-host
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: ollama
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: qdrant-pv-host
+  labels:
+    type: local
+    app: qdrant
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/storage/qdrant  # Mounted from macOS
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: qdrant-pvc-host
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: qdrant
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheus-pv-host
+  labels:
+    type: local
+    app: prometheus
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/storage/prometheus  # Mounted from macOS
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc-host
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: prometheus
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-pv-host
+  labels:
+    type: local
+    app: grafana
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /mnt/storage/grafana  # Mounted from macOS
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc-host
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: grafana

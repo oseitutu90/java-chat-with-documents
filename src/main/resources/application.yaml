@@ -1,0 +1,126 @@
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    org:
+      atmosphere: warn
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, info, health, metrics
+
+spring:
+  mustache:
+    check-template-location: false
+  jpa:
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  profiles:
+    active: dev
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: docs
+      collection: documents
+      index-name: default
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+
+vaadin:
+  launch-browser: true
+  allowed-packages:
+    - com.vaadin
+    - org.vaadin
+    - dev.hilla
+    - com.vaadin.demo
+  logging:
+    level:
+      dev:
+        langchain4j: DEBUG
+        ai4j:
+          openai4j: DEBUG
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}  #mongodb://localhost:27017
+      database: docs
+      collection: documents   # 👈 make sure this is the one you're targeting
+      index-name: default
+
+ai:
+  docs:
+    location: ${AI_DOCS_LOCATION} # /Users/oseitutuamoabin/Documents/searchable
+    langchain4j:
+      openAi:
+        apiKey: ollama
+        baseUrl: ${OPENAI_API_BASE_URL}
+        modelName: ${OPENAI_API_MODEL_NAME} #gemma3:12b #deepseek-r1:14b when i get macbook max
+        embeddingModelName: ${OPENAI_API_EMBEDDING_MODEL_NAME} # nomic-embed-text from ollama
+
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: docs
+      collection: documents   # 👈 make sure this is the one you're targeting
+      index-name: default
+
+ai:
+  docs:
+    location: ${AI_DOCS_LOCATION}
+    langchain4j:
+      openAi:
+          apiKey: ${OPENAI_API_KEY}
+          modelName: ${OPENAI_API_MODEL_NAME}
+          baseUrlChat: https://api.openai.com/v1/chat/completions
+          baseUrl: https://api.openai.com/v1
+          embeddingModelName: text-embedding-ada-002
+          log-requests: true
+          log-responses: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: qdrant
+
+ai:
+  docs:
+    location: ${AI_DOCS_LOCATION} # /app/documents
+    langchain4j:
+      openAi:
+        apiKey: ollama
+        baseUrl: ${OPENAI_API_BASE_URL} # http://ollama-service:11434
+        modelName: ${OPENAI_API_MODEL_NAME} # llama3.2
+        embeddingModelName: ${OPENAI_API_EMBEDDING_MODEL_NAME} # nomic-embed-text
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, info, health, metrics

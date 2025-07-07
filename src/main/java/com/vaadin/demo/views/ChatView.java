@@ -40,6 +40,7 @@ public class ChatView extends VerticalLayout {
         messageInput.setWidthFull();
         messageInput.addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
                 LumoUtility.Margin.Horizontal.AUTO, LumoUtility.MaxWidth.SCREEN_MEDIUM);
+
         messageInput.addSubmitListener(e -> {
             var questionText = e.getValue();
             var question = new MarkdownMessage(questionText, "You");
@@ -51,10 +52,16 @@ public class ChatView extends VerticalLayout {
             messageList.add(answer);
 
             aiAssistant.chat(chatId, questionText)
-                    .onNext(answer::appendMarkdownAsync)
-                    .onError(err -> System.err.println("ooops" + e))
+                    .onPartialResponse(answer::appendMarkdownAsync)
+                    .onCompleteResponse(complete -> {
+                        // Optionally do something on complete
+                    })
+                    .onError(err -> {
+                        answer.appendMarkdownAsync("\n⚠️ An error occurred: " + err.getMessage());
+                    })
                     .start();
         });
+
 
         add(newChatButton);
         var scroller = new Scroller(messageList);

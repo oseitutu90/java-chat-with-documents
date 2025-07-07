@@ -1,0 +1,30 @@
+spring:
+  config:
+    activate:
+      on-profile: atlas
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: docs
+      collection: documents
+      index-name: default
+
+ai:
+  docs:
+    location: ${AI_DOCS_LOCATION}
+    langchain4j:
+      openAi:
+        apiKey: ollama
+        baseUrl: ${OPENAI_API_BASE_URL}
+        modelName: ${OPENAI_API_MODEL_NAME}
+        embeddingModelName: ${OPENAI_API_EMBEDDING_MODEL_NAME}
+
+logging:
+  level:
+    dev:
+      langchain4j: DEBUG
+    org:
+      mongodb: DEBUG
+    com:
+      vaadin:
+        demo: DEBUG

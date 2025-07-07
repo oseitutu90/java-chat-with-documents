@@ -9,6 +9,13 @@ import dev.langchain4j.service.spring.AiService;
 @AiService
 public interface AiAssistant {
 
+    /**
+     * Provides a response to the user's message.
+     *
+     * @param chatId The ID of the chat to respond to.
+     * @param userMessage The message that the user entered.
+     * @return The response to the user's message.
+     */
     @SystemMessage("""
             You are a friendly and helpful assistant.
             Answer the questions as accurately as possible using the provided documents.

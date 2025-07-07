@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # MongoDB for document storage and embeddings
+  mongodb:
+    image: mongo:7.0
+    container_name: doc-chat-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=docs
+    networks:
+      - doc-chat-network
+
+  # Ollama for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: doc-chat-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_ORIGINS=*
+    networks:
+      - doc-chat-network
+    # Pull required models on startup
+    entrypoint: >
+      sh -c "
+        /bin/ollama serve &
+        sleep 10 &&
+        ollama pull llama3.2 &&
+        ollama pull nomic-embed-text &&
+        wait
+      "
+
+  # Main application
+  doc-chat-app:
+    build: .
+    container_name: doc-chat-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+      - ollama
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - MONGODB_URI=mongodb://mongodb:27017
+      - AI_DOCS_LOCATION=/app/documents
+      - OPENAI_API_BASE_URL=http://ollama:11434/v1
+      - OPENAI_API_MODEL_NAME=llama3.2
+      - OPENAI_API_EMBEDDING_MODEL_NAME=nomic-embed-text
+    volumes:
+      - ${DOCUMENTS_PATH:-./documents}:/app/documents:ro
+    networks:
+      - doc-chat-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  mongodb_data:
+  ollama_data:
+
+networks:
+  doc-chat-network:
+    driver: bridge

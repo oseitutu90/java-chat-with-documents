@@ -1,0 +1,30 @@
+spring:
+  config:
+    activate:
+      on-profile: qdrant
+
+ai:
+  docs:
+    location: ${AI_DOCS_LOCATION}
+    langchain4j:
+      openAi:
+        apiKey: ollama
+        baseUrl: ${OPENAI_API_BASE_URL}
+        modelName: ${OPENAI_API_MODEL_NAME}
+        embeddingModelName: ${OPENAI_API_EMBEDDING_MODEL_NAME}
+
+# Qdrant configuration
+qdrant:
+  host: qdrant-service
+  port: 6334  # gRPC port
+  collection-name: documents
+
+logging:
+  level:
+    dev:
+      langchain4j: DEBUG
+    io:
+      qdrant: DEBUG
+    com:
+      vaadin:
+        demo: DEBUG
