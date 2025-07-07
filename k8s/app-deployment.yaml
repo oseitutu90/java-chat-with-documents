@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doc-chat-app
+  namespace: doc-chat
+  labels:
+    app: doc-chat-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doc-chat-app
+  template:
+    metadata:
+      labels:
+        app: doc-chat-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      initContainers:
+      - name: wait-for-qdrant
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z qdrant-service 6333; do echo waiting for qdrant; sleep 2; done;']
+      - name: wait-for-ollama
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z ollama-service 11434; do echo waiting for ollama; sleep 2; done;']
+      containers:
+      - name: doc-chat-app
+        image: doc-chat:latest
+        imagePullPolicy: Never  # For Minikube local images
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "qdrant"
+        - name: AI_DOCS_LOCATION
+          valueFrom:
+            secretKeyRef:
+              name: doc-chat-secret
+              key: AI_DOCS_LOCATION
+        - name: OPENAI_API_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: doc-chat-secret
+              key: OPENAI_API_BASE_URL
+        - name: OPENAI_API_MODEL_NAME
+          valueFrom:
+            secretKeyRef:
+              name: doc-chat-secret
+              key: OPENAI_API_MODEL_NAME
+        - name: OPENAI_API_EMBEDDING_MODEL_NAME
+          valueFrom:
+            secretKeyRef:
+              name: doc-chat-secret
+              key: OPENAI_API_EMBEDDING_MODEL_NAME
+        volumeMounts:
+        - name: app-config
+          mountPath: /app/config
+          readOnly: true
+        - name: documents-storage
+          mountPath: /app/documents
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: app-config
+        configMap:
+          name: doc-chat-config
+      - name: documents-storage
+        persistentVolumeClaim:
+          claimName: documents-pvc-host
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: doc-chat-service
+  namespace: doc-chat
+  labels:
+    app: doc-chat-app
+spec:
+  selector:
+    app: doc-chat-app
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  type: ClusterIP

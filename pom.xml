@@ -101,21 +101,6 @@
             <version>${langchain.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>5.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-core</artifactId>
-            <version>5.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>5.2.1</version>
-        </dependency>
-        <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-easy-rag</artifactId>
         </dependency>
@@ -133,7 +118,7 @@
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-mongodb-atlas</artifactId>
+            <artifactId>langchain4j-qdrant</artifactId>
             <version>${langchain.version}</version>
         </dependency>
         <dependency>
@@ -155,11 +140,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>5.2.1</version> <!-- Must match your core + bson versions -->
         </dependency>
         <!-- Test dependencies -->
         <dependency>

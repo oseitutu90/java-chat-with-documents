@@ -1,63 +1,62 @@
 package com.vaadin.demo;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.vaadin.demo.config.AIDocsProperties;
-import com.vaadin.demo.config.MongoDbProperties;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
-import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
-import dev.langchain4j.store.embedding.mongodb.MongoDbEmbeddingStore;
+import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties({AIDocsProperties.class, MongoDbProperties.class})
+@EnableConfigurationProperties({AIDocsProperties.class})
 public class AIConfig {
 
     private static final Logger log = LoggerFactory.getLogger(AIConfig.class);
     private final AIDocsProperties aiDocsProperties;
-    private final MongoDbProperties mongoDbProperties;
 
     @Autowired
-    public AIConfig(AIDocsProperties aiDocsProperties, MongoDbProperties mongoDbProperties) {
+    public AIConfig(AIDocsProperties aiDocsProperties) {
         this.aiDocsProperties = aiDocsProperties;
-        this.mongoDbProperties = mongoDbProperties;
     }
 
+    /**
+     * Provides an {@link EmbeddingStore} for managing text segments, backed by Qdrant vector database.
+     * Qdrant is specifically designed for vector similarity search and provides excellent performance
+     * for embedding storage and retrieval operations.
+     *
+     * @return a configured Qdrant embedding store for text segments
+     */
     @Bean
-    public MongoClient mongoClient() {
-        return MongoClients.create(mongoDbProperties.getUri());
-    }
-
-    @Bean
-    public EmbeddingStore<TextSegment> embeddingStore(MongoClient mongoClient) {
-        return MongoDbEmbeddingStore.builder()
-                .fromClient(mongoClient)
-                .databaseName(mongoDbProperties.getDatabase())
-                .collectionName(mongoDbProperties.getCollection())
-                .indexName(mongoDbProperties.getIndexName())
-                .createIndex(true)
+    public EmbeddingStore<TextSegment> embeddingStore() {
+        return QdrantEmbeddingStore.builder()
+                .host("qdrant-service")  // Kubernetes service name
+                .port(6334)              // Qdrant gRPC port (6333 is HTTP, 6334 is gRPC)
+                .collectionName("documents")
                 .build();
     }
 
+    /**
+     * Provides an {@link EmbeddingModel} that can be used to compute embeddings for text segments.
+     * The model is configured using the base URL and model name specified in the
+     * {@link AIDocsProperties} for the OpenAI provider.
+     *
+     * @return an embedding model for computing embeddings for text segments
+     */
     @Bean
     public EmbeddingModel embeddingModel() {
         return OllamaEmbeddingModel.builder()
@@ -67,6 +66,21 @@ public class AIConfig {
     }
 
 
+    /**
+     * An {@link ApplicationRunner} that imports documents from the specified location to the MongoDB store.
+     * The runner is configured to connect to a MongoDB instance using the provided {@link MongoClient},
+     * and uses database and collection names specified in the {@link MongoDbProperties}.
+     * An index is created on the collection for efficient querying.
+     * The runner also configures an {@link EmbeddingModel} using the base URL and model name specified in the
+     * {@link AIDocsProperties} for the OpenAI provider.
+     * The documents are loaded from the specified location using a {@link FileSystemDocumentLoader}.
+     * The documents are then ingested into the store using an {@link EmbeddingStoreIngestor}.
+     * The runner logs the number of documents imported to the store.
+     *
+     * @param embeddingStore the MongoDB store to store the documents
+     * @param embeddingModel the embedding model to use for computing embeddings for the documents
+     * @return an application runner that imports documents to the store
+     */
     @Bean
     public ApplicationRunner docImporter(EmbeddingStore<TextSegment> embeddingStore, EmbeddingModel embeddingModel) {
         return args -> {

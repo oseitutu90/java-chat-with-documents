@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: documents-pv
+  labels:
+    type: local
+    app: documents
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce  # Changed from ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""  # Empty string for static provisioning
+  hostPath:
+    path: /tmp/documents-data  # Use /tmp which exists in Minikube
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: documents-pvc
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce  # Changed from ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: ""  # Must match PV
+  selector:
+    matchLabels:
+      app: documents

@@ -1,0 +1,42 @@
+# Maven
+target/
+!target/doc-chat-1.0.jar
+pom.xml
+src/
+mvnw
+mvnw.cmd
+.mvn/
+
+# IDE
+.idea/
+.vscode/
+.settings/
+.project
+.classpath
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Node modules (Vaadin frontend)
+node_modules/
+src/main/frontend/generated/
+pnpmfile.js
+vite.generated.ts
+webpack.generated.js
+
+# Test
+drivers/
+error-screenshots/
+
+# Documentation
+README.md
+LICENSE

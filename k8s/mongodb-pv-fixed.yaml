@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv
+  labels:
+    type: local
+    app: mongodb
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""  # Empty string for static provisioning
+  hostPath:
+    path: /tmp/mongodb-data  # Use /tmp which exists in Minikube
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""  # Must match PV
+  selector:
+    matchLabels:
+      app: mongodb

@@ -1,0 +1,41 @@
+# Dynamic Provisioning Alternative
+# This uses Minikube's built-in storage provisioner
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc-dynamic
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # storageClassName omitted to use default dynamic provisioner
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: documents-pvc-dynamic
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  # storageClassName omitted to use default dynamic provisioner
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-pvc-dynamic
+  namespace: doc-chat
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  # storageClassName omitted to use default dynamic provisioner
