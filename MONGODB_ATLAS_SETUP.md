@@ -96,10 +96,10 @@ metadata:
 type: Opaque
 data:
   MONGODB_URI: ${ENCODED_URI}
-  AI_DOCS_LOCATION: L2FwcC9kb2N1bWVudHM=
-  OPENAI_API_BASE_URL: aHR0cDovL29sbGFtYS1zZXJ2aWNlOjExNDM0
-  OPENAI_API_MODEL_NAME: bGxhbWEzLjI=
-  OPENAI_API_EMBEDDING_MODEL_NAME: bm9taWMtZW1iZWQtdGV4dA==
+  AI_DOCS_LOCATION: placeholder-docs-location
+  OPENAI_API_BASE_URL: placeholder
+  OPENAI_API_MODEL_NAME: placeholder-model
+  OPENAI_API_EMBEDDING_MODEL_NAME: placeholder
 EOF
 ```
 
